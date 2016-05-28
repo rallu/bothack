@@ -13,6 +13,8 @@ var app = express();
 
 var token = "EAAJhSrhupzsBAGgBIAnEnhTfgSYehmwPf04FD08FKZAoms7pZCFSwLBYDp3w00GKozRu5WfOX6LNHBxIVgfOdsZBZA3B8zRMKK20Oz6jqaWZBAG3PpmXxURVv2qhruAcK6NaUYsNofaKSZBWx43Ez4ZCDoTUfFGhduPpf6cYHbyegZDZD";
 
+var group = require("./group.js");
+
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -31,8 +33,13 @@ app.post('/webhook/', function (req, res) {
         event = req.body.entry[0].messaging[i];
         sender = event.sender.id;
         if (event.message && event.message.text) {
-            text = event.message.text;
-            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
+            var text = event.message.text;
+            if (text == "join") {
+                group.joinLobby(event.sender.id);
+            }
+            else {
+                sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
+            }
         }
     }
     res.sendStatus(200);
