@@ -3,6 +3,7 @@ var _ = require("lodash");
 var messaging = require("../messaging");
 var freerunning = require("../freerunning")
 var Promise = require("bluebird");
+var FB = require("../fb");
 
 var lobby = [];
 var rooms = [];
@@ -84,8 +85,10 @@ var group = {
         });
 
         room.people.forEach(function(personId) {
-            template = messaging.createFriendRequestTemplate(personId);
-            return messaging.sendTemplate(template);
+            if (personId != sender) {
+                template = messaging.createFriendRequestTemplate();
+                return messaging.sendTemplate(template);
+            }
         });
     },
     disbandRoomWithPerson: function(personId) {

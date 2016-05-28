@@ -55,12 +55,12 @@ function createFriendRequestTemplate(clientId) {
                             "buttons": [
                                 {
                                     "type": "web_url",
-                                    "url": "",
+                                    "url": "https://www.facebook.com/marco.suvanto",
                                     "title": "Yes"
                                 },
                                 {
-                                    "type": "web_url",
-                                    "url": "",
+                                    "type": "postback",
+                                    "payload": "NO",
                                     "title": "No"
                                 }
                             ]
@@ -87,5 +87,6 @@ function createTextTemplate(clientId, text) {
 module.exports = {
   createTextTemplate: createTextTemplate,
   createVideoTemplate: createVideoTemplate,
-  sendTemplate: sendTemplate
+  sendTemplate: sendTemplate,
+  createFriendRequestTemplate: createFriendRequestTemplate
 }

@@ -51,6 +51,7 @@ function processEvent(event) {
             }
 
             if (text.indexOf("friend") > -1) {
+                console.log("Sending friend request");
                 return groups.requestFriendForm(sender);
             } else {
                 // Otherwise direct it to the room
