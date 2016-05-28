@@ -7,7 +7,6 @@ module.exports = {
     getUserInfo: function(id) {
         return new Promise(function(resolve, reject) {
             FB.api("/" + id, function(response) {
-                console.log(response);
                 if (response.error) {
                     return reject(response.error);
                 }
