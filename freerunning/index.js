@@ -19,5 +19,14 @@ module.exports = {
                 })
                 .catch(reject);
         });
+    },
+    getStory: function(id) {
+        return new Promise(function(resolve, reject) {
+            request.get("http://api.redbull.com/v2/stories/" + id, { json: true })
+                .then(response => {
+                    resolve(response.stories[0])
+                })
+                .catch(reject);
+        });
     }
 };

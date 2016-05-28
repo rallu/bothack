@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html>
-
-  <head>
-    <title>NodeJS Starter Application</title>
+<head>
+    <title>Freerunners</title>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="stylesheets/style.css">
-  </head>
+</head>
 
-  <body>
-    <table>
-      <tr>
-        <td style= "width:30%;">
-          <img class = "newappIcon" src="images/newapp-icon.png">
-        <td>
-            <h1>Hi there!</h1>
-          <p>Thanks for creating a
-            <span class = "blue">NodeJS Starter Application</span>.
-            To get started see the Start Coding guide under your app in your dashboard.
-    </table>
-  </body>
+<body>
+    <script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '669923503155003',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
 
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+    <h1>REDBOT</h1>
+    <div class="center">
+        <h3>We just RELEASED NEW FEATURE!</h3>
+        <h2>MEET THE FREERUNNERS</h2>
+        <a href="https://www.messenger.com/t/609432342546610">Send to Messenger</a>
+        <!--
+        <div class="fb-send-to-messenger"
+          messenger_app_id="669923503155003"
+          page_id="609432342546610"
+          data-ref="PASS_THROUGH_PARAM"
+          color="white"
+          size="xlarge">
+        </div>
+    -->
+    </div>
+</body>
 </html>

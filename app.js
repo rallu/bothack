@@ -69,6 +69,10 @@ app.get("/randstory", function(req, res) {
     freerunning.getRandomFreerunningStory().then(story => res.send(story));
 });
 
+app.get("/story/:id", function(req, res) {
+    freerunning.getStory(req.params.id).then(story => res.send(story));
+});
+
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
 

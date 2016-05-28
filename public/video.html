@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freerunners</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <base href="/video.html">
+</head>
+<body ng-app="video" ng-controller="ctrl">
+    <h1>REDBOT</h1>
+    <div class="center">
+        <h3>{{title}}</h3>
+        <video src="{{videourl}}" controls autoplay></video>
+        <a href="https://www.messenger.com/t/609432342546610">Back to messenger</a>
+    </div>
+    <script>
+        angular.module("video", [])
+            .config(function($locationProvider, $sceProvider) {
+                $locationProvider.html5Mode(true)
+                $sceProvider.enabled(false);
+            })
+            .controller("ctrl", function($location, $scope, $http, $sce) {
+                var story = $location.search().storyid;
+                $http.get("/story/" + story).then(function(result) {
+                    $scope.title = result.data.title;
+                    $scope.videourl = result.data.videos[0].videourl;
+                });
+            });
+    </script>
+</body>
+</html>
