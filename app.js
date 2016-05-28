@@ -12,7 +12,6 @@ var cfenv = require('cfenv');
 
 // create a new express server
 var app = express();
-var group = require("./group.js");
 var fb = require("./fb");
 
 const dialogs = {};
