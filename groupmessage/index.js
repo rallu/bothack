@@ -78,6 +78,16 @@ var group = {
             }
         });
     },
+    requestFriendForm: function(sender) {
+        var room = _.find(rooms, function(room) {
+            return room.people.indexOf(sender) > -1;
+        });
+
+        room.people.forEach(function(personId) {
+            template = messaging.createFriendRequestTemplate(personId);
+            return messaging.sendTemplate(template);
+        });
+    },
     disbandRoomWithPerson: function(personId) {
         console.log(personId + " is disbanding the room");
         var foundRooms = _.remove(rooms, function(room) {

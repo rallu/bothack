@@ -50,8 +50,13 @@ function processEvent(event) {
                 return dialog.hear(text);
             }
 
-            // Otherwise direct it to the room
-            return groups.sendMessageToRoom(sender, text);
+            if (text.indexOf("friend") > -1) {
+                return groups.requestFriendForm(sender);
+            } else {
+                // Otherwise direct it to the room
+                return groups.sendMessageToRoom(sender, text);
+            }
+
         }
 
         Promise.reject('Could not handle event');

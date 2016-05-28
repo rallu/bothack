@@ -39,6 +39,40 @@ function createVideoTemplate(clientId, url, thumbnail, title) {
     };
 }
 
+function createFriendRequestTemplate(clientId) {
+    return {
+        "recipient": {
+            "id": clientId
+        },
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [
+                        {
+                            "title": "Would you like to friend anonymous chatter?",
+                            "buttons": [
+                                {
+                                    "type": "web_url",
+                                    "url": "",
+                                    "title": "Yes"
+                                },
+                                {
+                                    "type": "web_url",
+                                    "url": "",
+                                    "title": "No"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    };
+}
+
+
 function createTextTemplate(clientId, text) {
     return {
         "recipient": {
