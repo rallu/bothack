@@ -37,6 +37,9 @@ app.post('/webhook/', function (req, res) {
             if (text == "join") {
                 group.joinLobby(event.sender.id);
             }
+            else if (text == "leave") {
+                group.disbandRoomWithPerson(event.sender.id);
+            }
             else {
                 sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
             }

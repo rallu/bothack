@@ -6,20 +6,44 @@ var lobby = [];
 var rooms = [];
 var group = {
     joinLobby: function(id) {
-        sendTextMessage("You were joined to lobby", id);
+        console.log(id + " joined lobby");
+        sendTextMessage(id, "You were joined to lobby");
         lobby.push(id);
         checkForGroupCreate();
     },
     startRoom: function(peopleArray) {
+        console.log("Starting room with", peopleArray);
         rooms.push({
             id: uuid.v4(),
             people: peopleArray
         });
 
-        sendTextMessage("Hello! You are group with " + peopleArray[1], peopleArray[0]);
-        sendTextMessage("Hello! You are group with " + peopleArray[0], peopleArray[1]);
+        sendTextMessage(peopleArray[0], "Hello! You are group with " + peopleArray[1]);
+        sendTextMessage(peopleArray[1], "Hello! You are group with " + peopleArray[0]);
+    },
+    isInRoom: function(personId) {
+        var foundRooms = _.find(rooms, function(room) {
+            return room.people.indexOf(personId) > -1;
+        });
+        return foundRooms.id != null;
+    },
+    sendMessageToRoom: function(sender, message) {
+        if (!group.isInRoom(sender)) {
+            sendTextMessage(sender, "You are not in room to talk...");
+            return;
+        }
+
+        var room = _.find(rooms, function(room) {
+            return room.people.indexOf(sender) > -1;
+        });
+        room.people.forEach(function(personId) {
+            if (personId != sender) {
+                sendTextMessage(personId, "Other says: " + message);
+            }
+        });
     },
     disbandRoomWithPerson: function(personId) {
+        console.log(personId + " is disbanding the room");
         var foundRooms = _.remove(rooms, function(room) {
             return room.people.indexOf(personId) > -1;
         });
@@ -27,7 +51,7 @@ var group = {
         if (foundRooms.length > 0) {
             foundRooms.forEach(function(room) {
                 room.people.forEach(function(personId) {
-                    sendTextMessage("You were disbanded from room", personId);
+                    sendTextMessage(personId, "You were disbanded from room");
                     group.joinLobby(personId);
                 });
             });
@@ -44,6 +68,7 @@ function checkForGroupCreate() {
 }
 
 function sendTextMessage(sender, text) {
+    console.log("Sending message '" + text + "' to " + sender);
     messageData = {
         text:text
     };
