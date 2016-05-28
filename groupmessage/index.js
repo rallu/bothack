@@ -1,20 +1,29 @@
 var uuid = require("uuid");
 var _ = require("lodash");
-var messaging = require("./messaging");
+var messaging = require("../messaging");
+var freerunning = require("../freerunning")
+
 var lobby = [];
 var rooms = [];
 var group = {
+    clear: function() {
+        lobby = [];
+        rooms = [];
+    },
     joinLobby: function(personId) {
         if (group.isInLobby(personId) || group.isInRoom(personId)) {
             return;
         }
 
         console.log(personId + " joined lobby");
-        messaging.sendText(personId, "You were joined to lobby");
+        //messaging.sendText(personId, "You were joined to lobby");
         lobby.push(personId);
-        checkForGroupCreate();
     },
-    startRoom: function(peopleArray) {
+    isPeopleForRoom: function() {
+        return lobby.length > 1;
+    },
+    startRoom: function() {
+        peopleArray = lobby.splice(0, 2);
         console.log("Starting room with", peopleArray);
 
         rooms.push({
@@ -22,8 +31,19 @@ var group = {
             people: peopleArray
         });
 
-        messaging.sendText(peopleArray[0], "Hello! You are group with " + peopleArray[1]);
-        messaging.sendText(peopleArray[1], "Hello! You are group with " + peopleArray[0]);
+        freerunning.getRandomFreerunningStory().then(story => {
+            const url = `https://bothack.eu-gb.mybluemix.net/video.html?storyid=${story.id}`;
+            const still = story.videos[0].stillimage;
+            const title = story.videos[0].title;
+            const message = "Hello 🐨 and 🐰\n We all are freerunners. Let’s talk about it. Have you seen this video?";
+
+            return [
+                messaging.createVideoTemplate(peopleArray[0], url, still, title),
+                messaging.createTextTemplate(peopleArray[0], message),
+                messaging.createVideoTemplate(peopleArray[1], url, still, title),
+                messaging.createTextTemplate(peopleArray[1], message)
+              ].reverse();
+        });
     },
     isInLobby: function(personId) {
         return lobby.indexOf(personId) > -1;
@@ -45,7 +65,7 @@ var group = {
         });
         room.people.forEach(function(personId) {
             if (personId != sender) {
-                messaging.sendText(personId, "Anonymous says: " + message);
+                messaging.sendText(personId, "🐨 says: " + message);
             }
         });
     },
@@ -55,14 +75,7 @@ var group = {
             return room.people.indexOf(personId) > -1;
         });
 
-        if (foundRooms.length > 0) {
-            foundRooms.forEach(function(room) {
-                room.people.forEach(function(personId) {
-                    messaging.sendText(personId, "You were disbanded from room");
-                    group.joinLobby(personId);
-                });
-            });
-        }
+        group.clear();
     }
 };
 
