@@ -1,7 +1,6 @@
 var uuid = require("uuid");
 var _ = require("lodash");
 var messaging = require("./messaging");
-var emojis = "🐶🐱🐭🐹🐰🐻🐼🐨🐯🦁🐮🐷";
 var lobby = [];
 var rooms = [];
 var group = {
@@ -18,19 +17,13 @@ var group = {
     startRoom: function(peopleArray) {
         console.log("Starting room with", peopleArray);
 
-        var emo = [];
-        peopleArray.forEach(function() {
-            emo.push(emojis.charAt(Math.floor(Math.random() * emojis.length)));
-        });
-
         rooms.push({
             id: uuid.v4(),
-            people: peopleArray,
-            emojis: emo
+            people: peopleArray
         });
 
-        messaging.sendText(peopleArray[0], "Hello! You are group with " + emo[1]);
-        messaging.sendText(peopleArray[1], "Hello! You are group with " + emo[0]);
+        messaging.sendText(peopleArray[0], "Hello! You are group with " + peopleArray[1]);
+        messaging.sendText(peopleArray[1], "Hello! You are group with " + peopleArray[0]);
     },
     isInLobby: function(personId) {
         return lobby.indexOf(personId) > -1;
@@ -52,7 +45,7 @@ var group = {
         });
         room.people.forEach(function(personId) {
             if (personId != sender) {
-                messaging.sendText(personId, room.emojis[room.people.indexOf(sender)] + " says: " + message);
+                messaging.sendText(personId, "Anonymous says: " + message);
             }
         });
     },
