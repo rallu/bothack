@@ -58,6 +58,11 @@ app.get("/info/:id", function(req, res) {
     fb.getUserInfo(req.params.id).then(response => res.send(response));
 });
 
+var freerunning = require("./freerunning");
+app.get("/randstory", function(req, res) {
+    freerunning.getRandomFreerunningStory(story => res.send(story));
+});
+
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
 
