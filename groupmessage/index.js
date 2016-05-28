@@ -2,6 +2,7 @@ var uuid = require("uuid");
 var _ = require("lodash");
 var messaging = require("../messaging");
 var freerunning = require("../freerunning")
+var Promise = require("bluebird");
 
 var lobby = [];
 var rooms = [];
@@ -37,14 +38,17 @@ var group = {
             const title = story.videos[0].title;
             const message = "Hello 🐨 and 🐰\n We all are freerunners. Let’s talk about it. Have you seen this video?";
 
-            return [
+            const templates = [
                 messaging.createVideoTemplate(peopleArray[0], url, still, title),
                 messaging.createTextTemplate(peopleArray[0], message),
-                messaging.createVideoTemplate(peopleArray[1], url, still, title),
-                messaging.createTextTemplate(peopleArray[1], message)
+                //messaging.createVideoTemplate(peopleArray[1], url, still, title),
+                //messaging.createTextTemplate(peopleArray[1], message)
               ].reverse();
+
+            Promise.each(templates, messaging.sendTemplate);
         });
     },
+
     isInLobby: function(personId) {
         return lobby.indexOf(personId) > -1;
     },
@@ -55,18 +59,28 @@ var group = {
         return foundRooms && foundRooms.id != null;
     },
     sendMessageToRoom: function(sender, message) {
+        var template;
+        console.log("Sending message to room", message);
+
         if (!group.isInRoom(sender)) {
-            messaging.sendText(sender, "You are not in room to talk...");
-            return;
+            template = messaging.createTextTemplate(sender, "You are not in room to talk...");
+            return messaging.sendTemplate(template);
         }
 
         var room = _.find(rooms, function(room) {
             return room.people.indexOf(sender) > -1;
         });
+
         room.people.forEach(function(personId) {
-            if (personId != sender) {
-                messaging.sendText(personId, "🐨 says: " + message);
-            }
+            //if (personId != sender) {
+                template = messaging.createTextTemplate(personId, "🐨 says: " + message);
+                console.log(JSON.stringify(template, null, 2));
+                return messaging.sendTemplate(personId, template)
+                    .catch(error => {
+                        console.warn(error.message);
+                        console.warn(error.stack);
+                    })
+            //}
         });
     },
     disbandRoomWithPerson: function(personId) {
@@ -78,13 +92,5 @@ var group = {
         group.clear();
     }
 };
-
-function checkForGroupCreate() {
-    if (lobby.length > 1) {
-        //just take two first in group and start chat with them
-        var peopleForNewGroup = lobby.splice(0, 2);
-        group.startRoom(peopleForNewGroup);
-    }
-}
 
 module.exports = group;

@@ -1,9 +1,10 @@
 // Node needs the declaration to permit usage of 'let' */
 'use strict';
 
+const Promise = require('bluebird');
 const messaging = require('../messaging');
 const freerunning = require('../freerunning');
-const Promise = require('bluebird');
+const groups = require('../groupmessage');
 
 class Dialog {
   constructor(profile, story) {
@@ -50,17 +51,17 @@ class Dialog {
 
         return [
             messaging.createVideoTemplate(cid, url, still, title),
-            messaging.createTextTemplate(cid, `Did you like it?`),
-            messaging.createTextTemplate(cid, `Would you like to see another video?`),
+            messaging.createTextTemplate(cid, `Did you like it?`)
           ].reverse();
       })
       .bind(this);
   }
 
-  createMingleLoop() {
+  createMinglingFlow() {
+    const cid = this.profile.id;
+
     return Promise.resolve([
       messaging.createTextTemplate(cid, `Would you want to meet some other freerunners?`),
-      messaging.createTextTemplate(cid, `Ok, I'll introduce you to ${profile2.first_name}?`),
     ].reverse());
   }
 
@@ -69,24 +70,53 @@ class Dialog {
       switch(this.state) {
         case 'initial':
           // Pick a reply, until no more left in inital flow; then move to videos
-          var message = this.initialFlow.pop();
           if (this.initialFlow.length === 0) {
             this.state = 'videos';
+
+            return resolve(this.nextState());
           }
-          return resolve(message);
+
+          return resolve(this.initialFlow.pop());
 
         case 'videos':
-          // If there's nobody available in the room, show a video
+          // Run through video flow at least once
           if (this.videoFlow.length !== 0) {
             return resolve(this.videoFlow.pop());
+          }
+
+          // Then see if there's people to chat with
+          if (true || groups.isPeopleForRoom()) {
+            this.state = 'mingling';
+
+            this.createMinglingFlow()
+              .bind(this)
+              .then(flow => {
+                this.minglingFlow = flow;
+                return resolve(this.nextState());
+              });
           }
 
           // Loop in videos until we have somebody in the room
           return this.createVideoFlow()
             .then((flow) => {
               this.videoFlow = flow;
-              return resolve(this.videoFlow.pop());
+
+              // Create transition back to videos
+              var template = messaging.createTextTemplate(this.profile.id, `Would you like to see another video?`);
+              return resolve(template);
             });
+
+        case 'mingling':
+          // Run through mingling flow at least once
+          if (this.minglingFlow.length !== 0) {
+            return resolve(this.minglingFlow.pop());
+          }
+
+          // Create a room
+          groups.startRoom();
+          var template = messaging.createTextTemplate(this.profile.id, `Ok, I'll introduce you to somebody!`);
+          return resolve(template);
+          break;
 
         default:
             var template = messaging.createTextTemplate(this.profile.id, `Out of options`);

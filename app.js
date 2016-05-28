@@ -1,10 +1,11 @@
 'use strict';
 /*eslint-env node*/
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var Promise = require('bluebird');
-var Dialog = require('./dialog');
+const express = require('express');
+const bodyParser = require('body-parser');
+const Promise = require('bluebird');
+const Dialog = require('./dialog');
+const groups = require('./groupmessage');
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -18,10 +19,10 @@ const dialogs = {};
 
 function processEvent(event) {
     var sender = event.sender.id;
-    console.log('Process event');
 
     return new Promise((resolve, reject) => {
         var profile;
+        var dialog;
 
         if (dialogs[sender]) {
             return resolve(dialogs[sender]);
@@ -29,20 +30,28 @@ function processEvent(event) {
 
         return fb.getUserInfo(sender)
         .then(_profile => profile = _profile)
-        .then(story => {
+        .then(() => {
             profile.id = sender;
-            var dialog = new Dialog(profile, story);
+            dialog = new Dialog(profile);
             dialogs[sender] = dialog;
 
             return dialog.init();
         })
-        .then(dialog => resolve(dialog))
+        .then(() => groups.joinLobby(profile.id))
+        .then(() => resolve(dialog))
     })
     .then(dialog => {
         console.log('Handle message');
         if (event.message && event.message.text) {
             var text = event.message.text;
-            return dialog.hear(text);
+
+            // If the person is in lobby, use dialog. Otherwise use group msg
+            if (!groups.isInRoom(sender)) {
+                return dialog.hear(text);
+            }
+
+            // Otherwise direct it to the room
+            return groups.sendMessageToRoom(sender, text);
         }
 
         Promise.reject('Could not handle event');
@@ -81,7 +90,7 @@ app.post('/webhook/', function (req, res) {
             return res.sendStatus(200);
         })
         .finally(() => {
-            console.log('All done');
+            //console.log('All done');
         });
 });
 
