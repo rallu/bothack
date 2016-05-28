@@ -12,6 +12,7 @@ var cfenv = require('cfenv');
 // create a new express server
 var app = express();
 var group = require("./group.js");
+var fb = require("./fb");
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
@@ -51,6 +52,10 @@ app.post('/webhook/', function (req, res) {
         }
     }
     res.sendStatus(200);
+});
+
+app.get("/info/:id", function(req, res) {
+    fb.getUserInfo(req.params.id).then(response => res.send(response));
 });
 
 // get the app environment from Cloud Foundry
