@@ -60,7 +60,7 @@ app.get("/info/:id", function(req, res) {
 
 var freerunning = require("./freerunning");
 app.get("/randstory", function(req, res) {
-    freerunning.getRandomFreerunningStory(story => res.send(story));
+    freerunning.getRandomFreerunningStory().then(story => res.send(story));
 });
 
 // get the app environment from Cloud Foundry
