@@ -7,16 +7,7 @@ function sendTemplate(template) {
     const url = `https://graph.facebook.com/v2.6/me/messages?access_token=${token}`;
     const options = { json: true, body: template };
 
-    //console.log('Send template', JSON.stringify(template, null, 2));
-
-    return request.post(url, options)
-        .then(response => {
-            console.log('Got message', response);
-        })
-        .catch(error => {
-            console.warn('Error', error.message);
-            console.warn(error.stack);
-        });
+    return request.post(url, options);
 }
 
 function createVideoTemplate(clientId, url, thumbnail, title) {

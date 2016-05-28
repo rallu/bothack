@@ -85,7 +85,7 @@ class Dialog {
           }
 
           // Then see if there's people to chat with
-          if (true || groups.isPeopleForRoom()) {
+          if (groups.isPeopleForRoom()) {
             this.state = 'mingling';
 
             this.createMinglingFlow()

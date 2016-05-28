@@ -41,8 +41,8 @@ var group = {
             const templates = [
                 messaging.createVideoTemplate(peopleArray[0], url, still, title),
                 messaging.createTextTemplate(peopleArray[0], message),
-                //messaging.createVideoTemplate(peopleArray[1], url, still, title),
-                //messaging.createTextTemplate(peopleArray[1], message)
+                messaging.createVideoTemplate(peopleArray[1], url, still, title),
+                messaging.createTextTemplate(peopleArray[1], message)
               ].reverse();
 
             Promise.each(templates, messaging.sendTemplate);
@@ -72,15 +72,10 @@ var group = {
         });
 
         room.people.forEach(function(personId) {
-            //if (personId != sender) {
+            if (personId != sender) {
                 template = messaging.createTextTemplate(personId, "🐨 says: " + message);
-                console.log(JSON.stringify(template, null, 2));
-                return messaging.sendTemplate(personId, template)
-                    .catch(error => {
-                        console.warn(error.message);
-                        console.warn(error.stack);
-                    })
-            //}
+                return messaging.sendTemplate(template);
+            }
         });
     },
     disbandRoomWithPerson: function(personId) {

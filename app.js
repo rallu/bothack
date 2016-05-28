@@ -81,7 +81,6 @@ app.post('/webhook/', function (req, res) {
 
     return processEvent(event)
         .then(data => {
-
             return res.sendStatus(200);
         })
         .catch(error => {
