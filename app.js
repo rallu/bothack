@@ -1,7 +1,9 @@
+'use strict';
 /*eslint-env node*/
 
 var express = require('express');
 var bodyParser = require('body-parser');
+var Promise = require('bluebird');
 var Dialog = require('./dialog');
 
 // cfenv provides access to your Cloud Foundry environment
@@ -14,6 +16,35 @@ var group = require("./group.js");
 var fb = require("./fb");
 
 const dialogs = {};
+
+function processEvent(event) {
+    var sender = event.sender.id;
+    console.log('Process event');
+
+    return new Promise((resolve, reject) => {
+        if (dialogs[sender]) {
+            return resolve(dialogs[sender]);
+        }
+
+        return fb.getUserInfo(sender)
+        .then(profile => {
+            profile.id = sender;
+            var dialog = new Dialog(profile);
+            dialogs[sender] = dialog;
+
+            return resolve(dialog);
+        });
+    })
+    .then(dialog => {
+        console.log('Handle message');
+        if (event.message && event.message.text) {
+            var text = event.message.text;
+            return dialog.hear(text);
+        }
+
+        Promise.reject('Could not handle event');
+    });
+}
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
@@ -30,34 +61,25 @@ app.get('/webhook/', function (req, res) {
 });
 
 app.post('/webhook/', function (req, res) {
-    var i;
-    console.log('Body: ' + JSON.stringify(req.body));
+    //console.log('Body: ' + JSON.stringify(req.body));
 
-    messaging_events = req.body.entry[0].messaging;
-    for (i = 0; i < messaging_events.length; i++) {
-        var event = req.body.entry[0].messaging[i];
-        var sender = event.sender.id;
+    // Be cruel, just pick the first event
+    var messaging_events = req.body.entry[0].messaging;
+    var event = messaging_events[0];
 
-        // If we don't yet have a sender, create a new dialog
-        if (!dialogs[sender]) {
-            console.log('Client not found, creating a new one');
-            dialogs[sender] = new Dialog(sender);
-        }
+    return processEvent(event)
+        .then(data => {
 
-        var dialog = dialogs[sender];
-
-        if (event.message && event.message.text) {
-            var text = event.message.text;
-            dialog.say(text)
-                .then(result => {
-                    res.sendStatus(200);
-                })
-        }
-        else {
-            console.log('Response not handled', JSON.stringify(req.body));
-            res.sendStatus(200);
-        }
-    }
+            return res.sendStatus(200);
+        })
+        .catch(error => {
+            console.warn('Response not handled', error.message);
+            console.warn(error.stack);
+            return res.sendStatus(200);
+        })
+        .finally(() => {
+            console.log('All done');
+        });
 });
 
 app.get("/info/:id", function(req, res) {
