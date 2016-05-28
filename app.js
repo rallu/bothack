@@ -2,8 +2,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var messaging = require('./messaging');
-var videos = require('./videos');
+var Dialog = require('./dialog');
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -14,12 +13,16 @@ var app = express();
 var group = require("./group.js");
 var fb = require("./fb");
 
+const dialogs = {};
+
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 app.get('/webhook/', function (req, res) {
+    console.log(req.body);
+
     if (req.query['hub.verify_token'] === 'haha_i_have_token') {
         res.send(req.query['hub.challenge']);
     }
@@ -27,31 +30,34 @@ app.get('/webhook/', function (req, res) {
 });
 
 app.post('/webhook/', function (req, res) {
+    var i;
     console.log('Body: ' + JSON.stringify(req.body));
 
     messaging_events = req.body.entry[0].messaging;
     for (i = 0; i < messaging_events.length; i++) {
-        event = req.body.entry[0].messaging[i];
-        sender = event.sender.id;
+        var event = req.body.entry[0].messaging[i];
+        var sender = event.sender.id;
+
+        // If we don't yet have a sender, create a new dialog
+        if (!dialogs[sender]) {
+            console.log('Client not found, creating a new one');
+            dialogs[sender] = new Dialog(sender);
+        }
+
+        var dialog = dialogs[sender];
+
         if (event.message && event.message.text) {
             var text = event.message.text;
-            if (text == "join") {
-                group.joinLobby(event.sender.id);
-            }
-            else if (text == "leave") {
-                group.disbandRoomWithPerson(event.sender.id);
-            }
-            else if (text.substr(0,4) == "send") {
-                group.sendMessageToRoom(event.sender.id, text.substr(5));
-            }
-            else {
-                var video = videos[0];
-                messaging.sendText(sender, "Echo: " + text.substring(0, 200))
-                    .then(resonse => messaging.sendVideo(sender, video.url, video.thumbnail, video.title));
-            }
+            dialog.say(text)
+                .then(result => {
+                    res.sendStatus(200);
+                })
+        }
+        else {
+            console.log('Response not handled', JSON.stringify(req.body));
+            res.sendStatus(200);
         }
     }
-    res.sendStatus(200);
 });
 
 app.get("/info/:id", function(req, res) {
