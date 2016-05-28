@@ -9,6 +9,7 @@ body {
   background: url("../images/freerunner-1.jpg");
   background-size: cover;
   background-attachment: fixed;
+  background-position: center center;
 }
 
 h1 {
@@ -16,6 +17,13 @@ h1 {
 	position: absolute;
 	top: 20px;
 	left: 20px;
+}
+
+.logo {
+	width: 150px;
+	padding: 20px;
+	display: block;
+	margin: 0 auto;
 }
 
 a {
