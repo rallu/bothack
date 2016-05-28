@@ -20,7 +20,7 @@ var group = {
 
         var emo = [];
         peopleArray.forEach(function() {
-            emo.push(emojis.charAt(Math.floor(Math.random(0,emojis.length))));
+            emo.push(emojis.charAt(Math.floor(Math.random() * emojis.length)));
         });
 
         rooms.push({

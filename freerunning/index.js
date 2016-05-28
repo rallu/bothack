@@ -10,9 +10,8 @@ module.exports = {
             request.get(url, { json: true })
                 .then(response => {
                     if (response.stories) {
-                        var randindex = Math.floor(Math.random(0,response.stories.length));
+                        var randindex = Math.floor(Math.random() * response.stories.length);
                         var story = response.stories[randindex];
-                        console.log("Got story: " + story.title);
                         resolve(story);
                     } else {
                         reject("no-stories");
