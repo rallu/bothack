@@ -22,18 +22,22 @@ function processEvent(event) {
     console.log('Process event');
 
     return new Promise((resolve, reject) => {
+        var profile;
+
         if (dialogs[sender]) {
             return resolve(dialogs[sender]);
         }
 
         return fb.getUserInfo(sender)
-        .then(profile => {
+        .then(_profile => profile = _profile)
+        .then(story => {
             profile.id = sender;
-            var dialog = new Dialog(profile);
+            var dialog = new Dialog(profile, story);
             dialogs[sender] = dialog;
 
-            return resolve(dialog);
-        });
+            return dialog.init();
+        })
+        .then(dialog => resolve(dialog))
     })
     .then(dialog => {
         console.log('Handle message');

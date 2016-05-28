@@ -3,7 +3,7 @@
 const request = require('request-promise-lite');
 const token = "EAAJhSrhupzsBAGgBIAnEnhTfgSYehmwPf04FD08FKZAoms7pZCFSwLBYDp3w00GKozRu5WfOX6LNHBxIVgfOdsZBZA3B8zRMKK20Oz6jqaWZBAG3PpmXxURVv2qhruAcK6NaUYsNofaKSZBWx43Ez4ZCDoTUfFGhduPpf6cYHbyegZDZD";
 
-function sendTemplate(clientId, template) {
+function sendTemplate(template) {
     const url = `https://graph.facebook.com/v2.6/me/messages?access_token=${token}`;
     const options = { json: true, body: template };
 
@@ -19,8 +19,8 @@ function sendTemplate(clientId, template) {
         });
 }
 
-function sendVideo(clientId, url, thumbnail, title) {
-    const template = {
+function createVideoTemplate(clientId, url, thumbnail, title) {
+    return {
         "recipient": {
             "id": clientId
         },
@@ -46,12 +46,10 @@ function sendVideo(clientId, url, thumbnail, title) {
             }
         }
     };
-
-    return sendTemplate(clientId, template);
 }
 
-function sendText(clientId, text) {
-    const template = {
+function createTextTemplate(clientId, text) {
+    return {
         "recipient": {
             "id": clientId
         },
@@ -59,12 +57,10 @@ function sendText(clientId, text) {
             "text": text
         }
     };
-
-    return sendTemplate(clientId, template);
 }
 
 module.exports = {
-  sendText: sendText,
-  sendVideo: sendVideo,
+  createTextTemplate: createTextTemplate,
+  createVideoTemplate: createVideoTemplate,
   sendTemplate: sendTemplate
 }
