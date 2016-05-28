@@ -5,10 +5,14 @@ var request = require("request");
 var lobby = [];
 var rooms = [];
 var group = {
-    joinLobby: function(id) {
-        console.log(id + " joined lobby");
-        sendTextMessage(id, "You were joined to lobby");
-        lobby.push(id);
+    joinLobby: function(personId) {
+        if (group.isInLobby(personId) || group.isInRoom(personId)) {
+            return;
+        }
+
+        console.log(personId + " joined lobby");
+        sendTextMessage(personId, "You were joined to lobby");
+        lobby.push(personId);
         checkForGroupCreate();
     },
     startRoom: function(peopleArray) {
@@ -21,11 +25,14 @@ var group = {
         sendTextMessage(peopleArray[0], "Hello! You are group with " + peopleArray[1]);
         sendTextMessage(peopleArray[1], "Hello! You are group with " + peopleArray[0]);
     },
+    isInLobby: function(personId) {
+        return lobby.indexOf(personId) > -1;
+    },
     isInRoom: function(personId) {
         var foundRooms = _.find(rooms, function(room) {
             return room.people.indexOf(personId) > -1;
         });
-        return foundRooms.id != null;
+        return foundRooms && foundRooms.id != null;
     },
     sendMessageToRoom: function(sender, message) {
         if (!group.isInRoom(sender)) {

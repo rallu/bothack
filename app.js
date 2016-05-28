@@ -40,6 +40,9 @@ app.post('/webhook/', function (req, res) {
             else if (text == "leave") {
                 group.disbandRoomWithPerson(event.sender.id);
             }
+            else if (text.substr(0,4) == "send") {
+                group.sendMessageToRoom(event.sender.id, text.substr(5));
+            }
             else {
                 sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
             }
