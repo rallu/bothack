@@ -11,8 +11,8 @@
     "cfenv": "1.0.x",
     "express": "4.13.x",
     "lodash": "^4.13.1",
-    "request": "^2.72.0",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "request-promise-lite": "^0.4.0"
   },
   "repository": {},
   "engines": {
