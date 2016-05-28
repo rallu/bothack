@@ -1,6 +1,6 @@
 const request = require('request-promise-lite');
 
-var url = "http://api.redbull.com/v2/stories/tags/freerunning";
+var url = "http://api.redbull.com/v2/stories/tags/freerunning/contain/videos";
 
 var Promise = require("bluebird");
 
