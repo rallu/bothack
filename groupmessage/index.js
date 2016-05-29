@@ -101,6 +101,16 @@ var group = {
         });
 
         group.clear();
+    },
+    sendEventMessage: function(sender) {
+        var room = _.find(rooms, function(room) {
+            return room.people.indexOf(sender) > -1;
+        });
+
+        room.people.forEach(function(personId) {
+            template = messaging.createEventTemplate(personId);
+            messaging.sendTemplate(template);
+        });
     }
 };
 
