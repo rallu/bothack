@@ -106,7 +106,7 @@ function createEventTemplate(clientId) {
                     "template_type": "generic",
                     "elements": [
                         {
-                            "title": "Hey guys! You seem to be talkig events! Intrested in RED BULL ART OF MOTION?",
+                            "title": "Hey guys! You seem to be talking about events! Intrested in RED BULL ART OF MOTION?",
                             "image_url": "http://image.redbull.com/rbcom/010/2015-10-02/1331751440850_13/0010/1/800/450/13/redbull-art-of-motion-15-pre-event-header.jpg",
                             "buttons": [
                                 {
