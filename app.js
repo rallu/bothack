@@ -15,7 +15,7 @@ var cfenv = require('cfenv');
 var app = express();
 var fb = require("./fb");
 
-const dialogs = {};
+var dialogs = {};
 
 function processEvent(event) {
     var sender = event.sender.id;
@@ -90,8 +90,8 @@ app.post('/webhook/', function (req, res) {
     var messaging_events = req.body.entry[0].messaging;
     var event = messaging_events[0];
 
-    if (event.message && event.message.text == "reset") {
-        const dialogs = {};
+    if (event.message && event.message.text && event.message.text == "reset") {
+        dialogs = {};
         groups.clear();
         return res.sendStatus(200);
     }
