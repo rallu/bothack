@@ -10,6 +10,14 @@ function sendTemplate(template) {
     return request.post(url, options);
 }
 
+function sendWelcomeTemplate() {
+    const url = `https://graph.facebook.com/v2.6/609432342546610/thread_settings?access_token=${token}`;
+    const template = createWelcomeTemplate();
+    const options = { json: true, body: template };
+
+    return request.post(url, options);
+}
+
 function createVideoTemplate(clientId, url, thumbnail, title) {
     return {
         "recipient": {
@@ -72,6 +80,20 @@ function createFriendRequestTemplate(clientId) {
     };
 }
 
+function createWelcomeTemplate() {
+    return {
+      "setting_type":"call_to_actions",
+      "thread_state":"new_thread",
+      "call_to_actions":[
+        {
+          "message":{
+            "text": "Hello, freerunner! Nice to meet you! I’m Redbot, your artificial friend."
+          }
+        }
+      ]
+    };
+}
+
 function createEventTemplate(clientId) {
     return {
         "recipient": {
@@ -118,5 +140,6 @@ module.exports = {
   createVideoTemplate: createVideoTemplate,
   sendTemplate: sendTemplate,
   createFriendRequestTemplate: createFriendRequestTemplate,
-  createEventTemplate: createEventTemplate
+  createEventTemplate: createEventTemplate,
+  sendWelcomeTemplate: sendWelcomeTemplate
 }

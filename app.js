@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const Promise = require('bluebird');
 const Dialog = require('./dialog');
 const groups = require('./groupmessage');
+const messaging = require('./messaging');
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -130,4 +131,7 @@ var appEnv = cfenv.getAppEnv();
 app.listen(appEnv.port, '0.0.0.0', function() {
   // print a message when the server starts listening
   console.log("server starting on " + appEnv.url);
+
+  // Set up welcome template
+  messaging.sendWelcomeTemplate();
 });

@@ -41,10 +41,7 @@ class Dialog {
     const cid = this.profile.id;
 
     return Promise.resolve([
-      [
-        messaging.createTextTemplate(cid, `Hi ${this.profile.first_name}! Nice to meet you! I’m Redbot, your artificial friend.`),
-        messaging.createTextTemplate(cid, `Would you like to see some nice videos of freerunning?`)
-      ]
+      messaging.createTextTemplate(cid, `Would you like to see some nice videos of freerunning?`)
     ].reverse());
   }
 
@@ -144,7 +141,7 @@ class Dialog {
 
         // Case array
         if (Array.isArray(templateOrArray)) {
-          return Promise.mapSeries(templateOrArray, this.sayWithDelay.bind(this, 3000));
+          return Promise.mapSeries(templateOrArray, this.say.bind(this));
         }
 
         // Case plain template
