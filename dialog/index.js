@@ -32,12 +32,19 @@ class Dialog {
     .catch(error => console.log(error.stack))
   }
 
+  sayWithDelay(delay, messageTemplate) {
+    return this.say(messageTemplate)
+      .delay(delay);
+  }
+
   createInitialFlow() {
     const cid = this.profile.id;
 
     return Promise.resolve([
-      messaging.createTextTemplate(cid, `Hi ${this.profile.first_name}! Nice to meet you! I’m Redbot, your artificial friend.`),
-      messaging.createTextTemplate(cid, `Would you like to see some nice videos of freerunning?`),
+      [
+        messaging.createTextTemplate(cid, `Hi ${this.profile.first_name}! Nice to meet you! I’m Redbot, your artificial friend.`),
+        messaging.createTextTemplate(cid, `Would you like to see some nice videos of freerunning?`)
+      ]
     ].reverse());
   }
 
@@ -50,8 +57,10 @@ class Dialog {
         const title = story.videos[0].title;
 
         return [
-            messaging.createVideoTemplate(cid, url, still, title),
-            messaging.createTextTemplate(cid, `Did you like it?`)
+            [
+              messaging.createVideoTemplate(cid, url, still, title),
+              messaging.createTextTemplate(cid, `Did you like it?`)
+            ]
           ].reverse();
       })
       .bind(this);
@@ -128,7 +137,16 @@ class Dialog {
 
   hear(message) {
     this.nextState()
-      .then(template => this.say(template));
+      .then(templateOrArray => {
+
+        // Case array
+        if (Array.isArray(templateOrArray)) {
+          return Promise.mapSeries(templateOrArray, this.sayWithDelay.bind(this, 3000));
+        }
+
+        // Case plain template
+        return this.say(templateOrArray);
+      });
   }
 }
 
