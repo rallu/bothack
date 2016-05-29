@@ -78,6 +78,7 @@ class Dialog {
     return new Promise((resolve, reject) => {
       switch(this.state) {
         case 'initial':
+          console.log('In initial flow');
           // Pick a reply, until no more left in inital flow; then move to videos
           if (this.initialFlow.length === 0) {
             this.state = 'videos';
@@ -88,6 +89,7 @@ class Dialog {
           return resolve(this.initialFlow.pop());
 
         case 'videos':
+          console.log('In videos flow');
           // Run through video flow at least once
           if (this.videoFlow.length !== 0) {
             return resolve(this.videoFlow.pop());
@@ -107,7 +109,7 @@ class Dialog {
 
           // Loop in videos until we have somebody in the room
           return this.createVideoFlow()
-            .then((flow) => {
+            .then(flow => {
               this.videoFlow = flow;
 
               // Create transition back to videos
@@ -116,6 +118,7 @@ class Dialog {
             });
 
         case 'mingling':
+          console.log('In mingling flow');
           // Run through mingling flow at least once
           if (this.minglingFlow.length !== 0) {
             return resolve(this.minglingFlow.pop());
