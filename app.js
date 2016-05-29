@@ -54,6 +54,11 @@ function processEvent(event) {
                 console.log("Sending friend request");
                 return groups.requestFriendForm(sender);
             } else {
+
+                if (text.indexOf("event") > -1) {
+                    groups.sendEventMessage(sender);
+                }
+
                 // Otherwise direct it to the room
                 return groups.sendMessageToRoom(sender, text);
             }

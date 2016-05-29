@@ -72,6 +72,35 @@ function createFriendRequestTemplate(clientId) {
     };
 }
 
+function createEventTemplate(clientId) {
+    return {
+        "recipient": {
+            "id": clientId
+        },
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [
+                        {
+                            "title": "Hey guys! You seem to be talkig events! Intrested in RED BULL ART OF MOTION?",
+                            "image_url": "http://image.redbull.com/rbcom/010/2015-10-02/1331751440850_13/0010/1/800/450/13/redbull-art-of-motion-15-pre-event-header.jpg",
+                            "buttons": [
+                                {
+                                    "type": "web_url",
+                                    "url": "http://www.redbull.com/en/events/1331591841166/red-bull-art-of-motion",
+                                    "title": "Check it out"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    };
+}
+
 
 function createTextTemplate(clientId, text) {
     return {
@@ -88,5 +117,6 @@ module.exports = {
   createTextTemplate: createTextTemplate,
   createVideoTemplate: createVideoTemplate,
   sendTemplate: sendTemplate,
-  createFriendRequestTemplate: createFriendRequestTemplate
+  createFriendRequestTemplate: createFriendRequestTemplate,
+  createEventTemplate: createEventTemplate
 }
