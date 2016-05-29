@@ -86,10 +86,13 @@ var group = {
 
         room.people.forEach(function(personId) {
             if (personId != sender) {
-                template = messaging.createFriendRequestTemplate();
-                return messaging.sendTemplate(template);
+                template = messaging.createFriendRequestTemplate(personId);
+                messaging.sendTemplate(template);
             }
         });
+
+        template = messaging.createTextTemplate(sender, "Sent friend request to your chat partner.");
+        messaging.sendTemplate(template);
     },
     disbandRoomWithPerson: function(personId) {
         console.log(personId + " is disbanding the room");
