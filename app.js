@@ -85,6 +85,12 @@ app.post('/webhook/', function (req, res) {
     var messaging_events = req.body.entry[0].messaging;
     var event = messaging_events[0];
 
+    if (event.message.text == "reset") {
+        const dialogs = {};
+        groups.clear();
+        return;
+    }
+
     return processEvent(event)
         .then(data => {
             return res.sendStatus(200);
