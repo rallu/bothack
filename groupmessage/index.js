@@ -46,7 +46,9 @@ var group = {
                 messaging.createTextTemplate(peopleArray[1], message)
               ].reverse();
 
-            Promise.each(templates, messaging.sendTemplate);
+              setTimeout(function() {
+                  Promise.each(templates, messaging.sendTemplate);
+              }, 500);
         });
     },
 
